@@ -11,6 +11,7 @@ tfplan
 .terraform.lock.hcl
 
 # Certificates and private keys
+certificates/
 certificates/*.key
 certificates/*.crt
 certificates/*.pem
