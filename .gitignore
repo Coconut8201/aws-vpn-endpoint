@@ -1,0 +1,38 @@
+# VPN configuration files
+*.ovpn
+
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+tfplan
+.terraform/
+.terraform.lock.hcl
+
+# Certificates and private keys
+certificates/*.key
+certificates/*.crt
+certificates/*.pem
+!certificates/.gitkeep
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Claude Code
+.claude/
+
+# Logs
+*.log
+
+# Backup files
+*.backup
+*.bak
+
+# OS files
+Thumbs.db
