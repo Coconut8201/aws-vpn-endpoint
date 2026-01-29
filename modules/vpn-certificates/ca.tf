@@ -14,7 +14,7 @@ resource "tls_self_signed_cert" "ca" {
     locality            = var.locality
     organization        = var.organization_name
     organizational_unit = var.organizational_unit
-    common_name         = "${var.organization_name} Root CA"
+    common_name         = "${var.organization_name} CA"
   }
 
   validity_period_hours = var.certificate_validity_days * 24

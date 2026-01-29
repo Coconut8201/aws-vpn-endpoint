@@ -1,6 +1,6 @@
-# CloudWatch Log Group for Client VPN
-resource "aws_cloudwatch_log_group" "vpn" {
-  name              = "/aws/clientvpn/${var.vpn_endpoint_name}"
+# CloudWatch Logs Group for Client VPN
+resource "aws_cloudwatch_log_group" "client_vpn_logs" {
+  name              = "${var.output_path}/client-vpn/${var.client_vpn_name}/logs"
   retention_in_days = var.log_retention_days
 
   tags = var.tags
@@ -8,46 +8,49 @@ resource "aws_cloudwatch_log_group" "vpn" {
 
 resource "aws_cloudwatch_log_stream" "vpn" {
   name           = "connection-log"
-  log_group_name = aws_cloudwatch_log_group.vpn.name
+  log_group_name = aws_cloudwatch_log_group.client_vpn_logs.name
 }
 
-# Security Group for Client VPN
-resource "aws_security_group" "vpn" {
-  name_prefix = "${var.vpn_endpoint_name}-"
-  description = "Security group for Client VPN endpoint"
-  vpc_id      = var.vpc_id
+# Security Group For Client VPN
+resource "aws_security_group" "client_vpn" {
+  name_prefix = "${var.client_vpn_name}-"
+  description = "Security group for Client VPN"
+
+  vpc_id = var.vpc_id
 
   tags = merge(
     var.tags,
     {
-      Name = "${var.vpn_endpoint_name}-sg"
+      Name = "${var.client_vpn_name}-sg"
     }
   )
 }
 
+# vpn ingress rule
 resource "aws_security_group_rule" "vpn_ingress" {
   type              = "ingress"
   from_port         = 0
   to_port           = 0
-  protocol          = "-1"
+  protocol          = -1
   cidr_blocks       = [var.client_cidr_block]
-  security_group_id = aws_security_group.vpn.id
+  security_group_id = aws_security_group.client_vpn.id
   description       = "Allow traffic from VPN clients"
 }
 
+# vpn egress rule
 resource "aws_security_group_rule" "vpn_egress" {
   type              = "egress"
   from_port         = 0
   to_port           = 0
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = aws_security_group.vpn.id
+  security_group_id = aws_security_group.client_vpn.id
   description       = "Allow all outbound traffic"
 }
 
 # Client VPN Endpoint
 resource "aws_ec2_client_vpn_endpoint" "this" {
-  description            = var.description
+  description            = "Client VPN Endpoint for ${var.client_vpn_name}"
   server_certificate_arn = var.server_certificate_arn
   client_cidr_block      = var.client_cidr_block
 
@@ -58,23 +61,22 @@ resource "aws_ec2_client_vpn_endpoint" "this" {
 
   connection_log_options {
     enabled               = true
-    cloudwatch_log_group  = aws_cloudwatch_log_group.vpn.name
+    cloudwatch_log_group  = aws_cloudwatch_log_group.client_vpn_logs.name
     cloudwatch_log_stream = aws_cloudwatch_log_stream.vpn.name
   }
 
   dns_servers         = var.dns_servers
   split_tunnel        = var.split_tunnel
   vpc_id              = var.vpc_id
-  security_group_ids  = [aws_security_group.vpn.id]
+  security_group_ids  = [aws_security_group.client_vpn.id]
   self_service_portal = "disabled"
 
   transport_protocol = "udp"
   vpn_port           = 443
 
   tags = merge(
-    var.tags,
-    {
-      Name = var.vpn_endpoint_name
+    var.tags, {
+      Name = var.client_vpn_name
     }
   )
 }

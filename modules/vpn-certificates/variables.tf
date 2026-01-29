@@ -3,6 +3,12 @@ variable "organization_name" {
   type        = string
 }
 
+variable "output_path" {
+  description = "Path to store generated certificates"
+  type        = string
+  default     = "generated"
+}
+
 variable "country" {
   description = "Country code (e.g., TW)"
   type        = string
@@ -27,49 +33,25 @@ variable "organizational_unit" {
   default     = "IT Department"
 }
 
-variable "vpn_server_cn" {
-  description = "Common Name for VPN server certificate"
-  type        = string
-}
-
-variable "server_san_dns_names" {
-  description = "DNS names for server certificate SAN"
-  type        = list(string)
-  default = [
-    "server",
-    "vpn.internal",
-    "vpn-server.internal",
-    "localhost",
-  ]
-}
-
-variable "server_san_ips" {
-  description = "IP addresses for server certificate SAN"
-  type        = list(string)
-  default     = ["127.0.0.1"]
-}
-
 variable "certificate_validity_days" {
   description = "Certificate validity period in days"
   type        = number
   default     = 825
 }
 
-variable "client_names" {
-  description = "List of client names to generate certificates for"
+variable "server_cn" {
+  description = "Common Name for VPN server certificate"
+  type        = string
+}
+
+variable "server_dns_names" {
+  description = "DNS names for VPN server certificate"
   type        = list(string)
-  default     = ["client1"]
 }
 
-variable "output_path" {
-  description = "Path to store generated certificates"
-  type        = string
-  default     = "generated"
-}
-
-variable "aws_region" {
-  description = "AWS region for ACM certificate"
-  type        = string
+variable "server_san_ips" {
+  description = "IP addresses for server certificate SAN"
+  type        = list(string)
 }
 
 variable "enable_acm_import" {
@@ -78,8 +60,14 @@ variable "enable_acm_import" {
   default     = true
 }
 
+
 variable "tags" {
   description = "Tags to apply to ACM certificate"
   type        = map(string)
   default     = {}
+}
+
+variable "client_names" {
+  description = "List of client names to generate certificates for"
+  type        = list(string)
 }

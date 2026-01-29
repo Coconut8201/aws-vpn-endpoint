@@ -1,54 +1,39 @@
-# Terraform
-.terraform/
-*.tfstate
-*.tfstate.*
-*.tfvars.backup
-.terraform.lock.hcl
-crash.log
-override.tf
-override.tf.json
-*_override.tf
-*_override.tf.json
-
-# Generated certificates and keys
-generated/
-*.crt
-*.key
-*.pem
-*.p12
+# VPN configuration files
 *.ovpn
 
-# VPN configuration files
-*-vpn.ovpn
-client-vpn-config.ovpn
+# Terraform files
+*.tfstate
+*.tfstate.*
+*.tfvars
+!terraform.tfvars.example
+tfplan
+.terraform/
+.terraform.lock.hcl
 
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-._*
+# Certificates and private keys
+certificates/
+certificates/*.key
+certificates/*.crt
+certificates/*.pem
+!certificates/.gitkeep
 
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux
-*~
-
-# Editor
+# IDE and editor files
 .vscode/
 .idea/
 *.swp
 *.swo
-*.swn
+*~
+.DS_Store
+
+# Claude Code
 .claude/
 
 # Logs
 *.log
 
-# Backups
-*.bak
+# Backup files
 *.backup
+*.bak
 
-easy-rsa/
+# OS files
+Thumbs.db

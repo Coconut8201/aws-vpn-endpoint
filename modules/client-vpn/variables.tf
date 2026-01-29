@@ -1,22 +1,30 @@
-variable "vpn_endpoint_name" {
-  description = "Name of the Client VPN endpoint"
+variable "output_path" {
+  description = "Path to store generated certificates"
   type        = string
+  default     = "generated"
 }
 
-variable "description" {
-  description = "Description of the Client VPN endpoint"
+variable "client_vpn_name" {
+  description = "the name for client vpn"
   type        = string
-  default     = "Client VPN Endpoint"
+  default     = "client-vpn"
+}
+
+variable "log_retention_days" {
+  description = "Retention period for CloudWatch Logs"
+  type        = number
+  default     = 30
+}
+
+variable "tags" {
+  description = "Tags to apply to ACM certificate"
+  type        = map(string)
+  default     = {}
 }
 
 variable "vpc_id" {
   description = "ID of the VPC to associate with the Client VPN"
   type        = string
-}
-
-variable "subnet_ids" {
-  description = "List of subnet IDs to associate with the Client VPN"
-  type        = list(string)
 }
 
 variable "client_cidr_block" {
@@ -41,15 +49,14 @@ variable "dns_servers" {
 }
 
 variable "split_tunnel" {
-  description = "Enable split tunnel mode"
+  description = "Enable split tunneling"
   type        = bool
-  default     = true
+  default     = false
 }
 
-variable "log_retention_days" {
-  description = "CloudWatch log retention in days"
-  type        = number
-  default     = 7
+variable "subnet_ids" {
+  description = "List of subnet IDs to associate with the Client VPN"
+  type        = list(string)
 }
 
 variable "additional_cidrs" {
@@ -65,10 +72,4 @@ variable "vpn_routes" {
     description      = string
   }))
   default = {}
-}
-
-variable "tags" {
-  description = "Tags to apply to resources"
-  type        = map(string)
-  default     = {}
 }

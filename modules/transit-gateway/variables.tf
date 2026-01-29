@@ -3,10 +3,10 @@ variable "tgw_name" {
   type        = string
 }
 
-variable "description" {
-  description = "Description of the Transit Gateway"
-  type        = string
-  default     = "Transit Gateway for VPC connectivity"
+variable "tags" {
+  description = "Tags to apply to resources"
+  type        = map(string)
+  default     = {}
 }
 
 variable "vpc_attachments" {
@@ -25,10 +25,4 @@ variable "tgw_routes" {
     destination_cidr = string
   }))
   default = {}
-}
-
-variable "tags" {
-  description = "Tags to apply to resources"
-  type        = map(string)
-  default     = {}
 }

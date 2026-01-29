@@ -1,20 +1,20 @@
 # Transit Gateway
+
 resource "aws_ec2_transit_gateway" "this" {
-  description                     = var.description
+  description                     = "Transit Gateway for AWS VPN Endpoint"
   default_route_table_association = "enable"
   default_route_table_propagation = "enable"
   dns_support                     = "enable"
   vpn_ecmp_support                = "enable"
 
   tags = merge(
-    var.tags,
-    {
+    var.tags, {
       Name = var.tgw_name
     }
   )
 }
 
-# Transit Gateway VPC Attachments
+# Transit Gateway Attachments
 resource "aws_ec2_transit_gateway_vpc_attachment" "this" {
   for_each = var.vpc_attachments
 

@@ -1,71 +1,56 @@
-output "ca_certificate_pem" {
-  description = "CA certificate in PEM format"
-  value       = tls_self_signed_cert.ca.cert_pem
+output "server_certificate_arn" {
+  description = "ARN of the server certificate in ACM"
+  value       = var.enable_acm_import ? aws_acm_certificate.server[0].arn : null
 }
 
-output "ca_private_key_pem" {
-  description = "CA private key in PEM format"
-  value       = tls_private_key.ca.private_key_pem
+output "server_certificate_id" {
+  description = "ID of the server certificate in ACM"
+  value       = var.enable_acm_import ? aws_acm_certificate.server[0].id : null
+}
+
+output "ca_cert_pem" {
+  description = "CA certificate in PEM format"
+  value       = tls_self_signed_cert.ca.cert_pem
   sensitive   = true
 }
 
-output "ca_certificate_path" {
-  description = "Path to CA certificate file"
-  value       = local_file.ca_cert.filename
-}
-
-output "server_certificate_pem" {
+output "server_cert_pem" {
   description = "Server certificate in PEM format"
   value       = tls_locally_signed_cert.server.cert_pem
+  sensitive   = true
 }
 
-output "server_private_key_pem" {
+output "server_key_pem" {
   description = "Server private key in PEM format"
   value       = tls_private_key.server.private_key_pem
   sensitive   = true
 }
 
-output "server_certificate_path" {
-  description = "Path to server certificate file"
-  value       = local_file.server_cert.filename
-}
-
-output "server_private_key_path" {
-  description = "Path to server private key file"
-  value       = local_sensitive_file.server_key.filename
-}
-
-output "acm_certificate_arn" {
-  description = "ARN of the ACM certificate"
-  value       = var.enable_acm_import ? aws_acm_certificate.server[0].arn : null
-}
-
-output "acm_certificate_id" {
-  description = "ID of the ACM certificate"
-  value       = var.enable_acm_import ? aws_acm_certificate.server[0].id : null
-}
-
-output "acm_certificate_status" {
-  description = "Status of the ACM certificate"
-  value       = var.enable_acm_import ? aws_acm_certificate.server[0].status : null
-}
-
 output "client_certificates" {
-  description = "Map of client certificate paths"
+  description = "Map of client names to certificate PEMs"
   value = {
-    for name in var.client_names : name => {
-      certificate = local_file.client_cert[name].filename
-      private_key = local_sensitive_file.client_key[name].filename
-    }
+    for name in var.client_names :
+    name => tls_locally_signed_cert.client[name].cert_pem
   }
+  sensitive = true
 }
 
-output "server_san_dns_names" {
-  description = "Server certificate SAN DNS names"
-  value       = concat([var.vpn_server_cn], var.server_san_dns_names)
+output "client_private_keys" {
+  description = "Map of client names to private key PEMs"
+  value = {
+    for name in var.client_names :
+    name => tls_private_key.client[name].private_key_pem
+  }
+  sensitive = true
 }
 
-output "server_san_ip_addresses" {
-  description = "Server certificate SAN IP addresses"
-  value       = var.server_san_ips
+output "certificate_files" {
+  description = "Paths to generated certificate files"
+  value = {
+    ca_cert     = "${var.output_path}/ca.crt"
+    ca_key      = "${var.output_path}/ca.key"
+    server_cert = "${var.output_path}/server/server.crt"
+    server_key  = "${var.output_path}/server/server.key"
+    client_dir  = "${var.output_path}/clients"
+  }
 }

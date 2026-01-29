@@ -11,7 +11,6 @@ resource "tls_cert_request" "client" {
   for_each = toset(var.client_names)
 
   private_key_pem = tls_private_key.client[each.key].private_key_pem
-
   subject {
     country             = var.country
     province            = var.province
