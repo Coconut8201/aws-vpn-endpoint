@@ -31,6 +31,9 @@ module "business_vpc" {
   subnet_cidr = var.business_private_subnet_cidrs
   az          = var.az
 
+  # 啟用 Internet Gateway 讓 EC2 可以對外連線
+  enable_internet_gateway = true
+
   # 允許來自 Network VPC 和 VPN clients 的流量
   allowed_cidr_blocks = [
     var.network_vpc_cidr,
@@ -188,14 +191,15 @@ module "network_ec2" {
 module "business_ec2" {
   source = "./modules/ec2"
 
-  project_name       = var.project_name
-  environment        = var.environment
-  vpc_type           = "business"
-  instance_type      = var.ec2_instance_type
-  subnet_id          = module.business_vpc.subnet_id
-  security_group_ids = [module.business_vpc.default_security_group_id]
-  key_name           = var.ec2_key_name
-  root_volume_size   = var.ec2_root_volume_size
+  project_name                = var.project_name
+  environment                 = var.environment
+  vpc_type                    = "business"
+  instance_type               = var.ec2_instance_type
+  subnet_id                   = module.business_vpc.subnet_id
+  security_group_ids          = [module.business_vpc.default_security_group_id]
+  key_name                    = var.ec2_key_name
+  root_volume_size            = var.ec2_root_volume_size
+  associate_public_ip_address = true
 
   # user_data = <<-EOF
   #   #!/bin/bash

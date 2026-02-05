@@ -36,3 +36,9 @@ variable "allowed_cidr_blocks" {
   type        = list(string)
   default     = []
 }
+
+variable "enable_internet_gateway" {
+  description = "是否啟用 Internet Gateway (讓 subnet 成為公開子網路)"
+  type        = bool
+  default     = false
+}
