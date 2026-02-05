@@ -22,7 +22,18 @@ resource "aws_subnet" "this" {
   }
 }
 
-# Route Table for Private Subnets
+# Internet Gateway (optional)
+resource "aws_internet_gateway" "this" {
+  count  = var.enable_internet_gateway ? 1 : 0
+  vpc_id = aws_vpc.this.id
+
+  tags = {
+    Name        = "${var.vpc_name}-igw"
+    Environment = var.environment
+  }
+}
+
+# Route Table
 resource "aws_route_table" "this" {
   vpc_id = aws_vpc.this.id
 
@@ -31,7 +42,15 @@ resource "aws_route_table" "this" {
   }
 }
 
-# Associate Private Subnets with Route Table
+# Default route to Internet Gateway (if enabled)
+resource "aws_route" "internet_access" {
+  count                  = var.enable_internet_gateway ? 1 : 0
+  route_table_id         = aws_route_table.this.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.this[0].id
+}
+
+# Associate Subnets with Route Table
 resource "aws_route_table_association" "this" {
   subnet_id      = aws_subnet.this.id
   route_table_id = aws_route_table.this.id
@@ -43,13 +62,13 @@ resource "aws_security_group" "default" {
   description = "Default security group for ${var.vpc_name}"
   vpc_id      = aws_vpc.this.id
 
-  # Allow SSH from VPN clients
+  # Allow SSH from VPN clients and Internet (if IGW enabled)
   ingress {
     description = "SSH from VPN clients"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.101.0.0/16"]
+    cidr_blocks = var.enable_internet_gateway ? ["0.0.0.0/0"] : ["10.101.0.0/16"]
   }
 
   # Allow ICMP (ping) from VPN clients

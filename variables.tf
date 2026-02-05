@@ -195,5 +195,5 @@ variable "ec2_key_name" {
 variable "ec2_root_volume_size" {
   description = "EC2 根卷大小 (GB)"
   type        = number
-  default     = 8
+  default     = 30
 }

@@ -50,6 +50,12 @@ variable "user_data" {
   default     = null
 }
 
+variable "associate_public_ip_address" {
+  description = "是否分配公開 IP 地址"
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "額外的標籤"
   type        = map(string)
